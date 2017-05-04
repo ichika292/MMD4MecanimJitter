@@ -2,9 +2,9 @@
 UnityのMMD4Mecanim用アドオンです。  
 morphWeightやBoneをプロージャル生成した波形で振幅させます。ループ再生しつつ、任意のタイミングで別の波形を加算することが出来ます。  
 ## MMD4M_MorphJitter
-MMD4MecanimModelImpl.Morph.weightに計算結果を出力して振幅させる。
+MMD4MecanimModelImpl.Morph.weightに計算結果を出力して振幅させます。
 ## MMD4M_BoneJitter
-MecanimBoneのuserRotationに計算結果を出力して振幅させる。
+MecanimBoneのuserRotationに計算結果を出力して振幅させます。
 
 userRotationはidentity以外のときにAnimatorを上書きする仕様のようで、併用するとidentity付近で不連続な挙動を起こす恐れがある。  
 **TODO:** userRotationを介さない回転の乗算→Animatorとのブレンドが可能に。
