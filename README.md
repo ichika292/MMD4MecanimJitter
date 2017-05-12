@@ -7,7 +7,5 @@ morphWeightやBoneをプロージャル生成した波形で振幅させます�
 MMD4MecanimModelImpl.Morph.weightに計算結果を出力して振幅させます。
 ## MMD4M_BoneJitter
 MecanimBoneのuserRotationに計算結果を出力して振幅させます。
-
-userRotationはidentity以外のときにAnimatorを上書きする仕様のようで、併用するとidentity付近で不連続な挙動を起こす恐れがある。  
 ## MMD4M_EyeJitter
 MecanimBoneのuserRotationを使ったサッケード眼球運動。
