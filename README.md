@@ -9,6 +9,5 @@ MMD4MecanimModelImpl.Morph.weightに計算結果を出力して振幅させま�
 MecanimBoneのuserRotationに計算結果を出力して振幅させます。
 
 userRotationはidentity以外のときにAnimatorを上書きする仕様のようで、併用するとidentity付近で不連続な挙動を起こす恐れがある。  
-**TODO:** userRotationを介さない回転の乗算→Animatorとのブレンドが可能に？
 ## MMD4M_EyeJitter
 MecanimBoneのuserRotationを使ったサッケード眼球運動。
