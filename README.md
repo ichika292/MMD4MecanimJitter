@@ -11,4 +11,3 @@ MecanimBoneのuserRotationに計算結果を出力して振幅させます。
 [チュートリアル MMD4Mecanim BoneJitter](https://www.youtube.com/watch?v=f6L_DibGg9E)
 ## MMD4M_EyeJitter
 MecanimBoneのuserRotationを使ったサッケード眼球運動。
-git-test
