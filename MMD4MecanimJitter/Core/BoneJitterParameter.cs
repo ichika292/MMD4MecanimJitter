@@ -62,6 +62,7 @@ namespace MYB.MMD4MecanimJitter
                 //各プロパティー取得
                 var curveProperty = property.FindPropertyRelative("periodToAmplitude");
                 var periodProperty = property.FindPropertyRelative("period");
+                var intervalProperty = property.FindPropertyRelative("interval");
                 var amplitudeProperty = property.FindPropertyRelative("amplitude");
                 var offsetProperty = property.FindPropertyRelative("offset");
                 var blendNextStateProperty = property.FindPropertyRelative("blendNextState");
@@ -79,6 +80,8 @@ namespace MYB.MMD4MecanimJitter
                 {
                     //Period Interval
                     PutPropertyField(ref position, periodProperty);
+                    if (!loop)
+                        PutPropertyField(ref position, intervalProperty);
                     //Amplitude Offset
                     PutPropertyField(ref position, amplitudeProperty);
                     if (loop)
@@ -109,7 +112,7 @@ namespace MYB.MMD4MecanimJitter
             bool syncAxis = property.FindPropertyRelative("syncAxis").boolValue;
 
             int row = isEnabled ? 1 : 0;
-            int tmpRow = loop ? 4 : 2;
+            int tmpRow = loop ? 4 : 3;
             row += ((syncAxis && isXAxis) || (!syncAxis && isEnabled)) ? tmpRow : 0;
 
             return row * (EditorGUIUtility.singleLineHeight + CLEARANCE_Y);

@@ -26,14 +26,31 @@ namespace MYB.MMD4MecanimJitter
             Initialize();
         }
 
+#region ********** LOOP ***********    
         /// <summary>
         /// ループ再生開始
         /// </summary>
         public void PlayLoop()
         {
+            _PlayLoop(1f);
+        }
+
+        /// <summary>
+        /// ループ再生開始　振幅倍率設定あり
+        /// </summary>
+        public void PlayLoop(float magnification)
+        {
+            _PlayLoop(Mathf.Max(0f, magnification));
+        }
+
+        void _PlayLoop(float magnification)
+        {
             if (helperList.Count == 0) return;
 
             StopLoop();
+
+            //振幅倍率
+            loopParameter.magnification = magnification;
 
             if (!loopGroupEnabled) return;
 
@@ -63,15 +80,36 @@ namespace MYB.MMD4MecanimJitter
 
             SetMorphWeight();
         }
+#endregion
 
+#region ********** ONCE ***********
         /// <summary>
         /// 1周再生
         /// </summary>
         public void PlayOnce()
         {
+            _PlayOnce(1f);
+        }
+
+        /// <summary>
+        /// 1周再生　振幅倍率設定あり
+        /// </summary>
+        public void PlayOnce(float magnification)
+        {
+            _PlayOnce(Mathf.Max(0f, magnification));
+        }
+
+        void _PlayOnce(float magnification)
+        {
             if (!onceGroupEnabled) return;
 
+            //動作中で上書き不可ならば return
+            if (OnceIsProcessing && !overrideOnce) return;
+
             StopOnce();
+
+            //振幅倍率
+            onceParameter.magnification = magnification;
 
             foreach (MorphJitterHelper h in helperList)
             {
@@ -91,7 +129,8 @@ namespace MYB.MMD4MecanimJitter
 
             SetMorphWeight();
         }
-
+#endregion
+        
         /// <summary>
         /// 全再生停止 & 初期化
         /// </summary>
@@ -113,6 +152,7 @@ namespace MYB.MMD4MecanimJitter
         public class MMD4M_MorphJitterEditor : Editor
         {
             SerializedProperty syncProperty;
+            SerializedProperty overrideOnceProperty;
             SerializedProperty helperListProperty;
             SerializedProperty loopParameterProperty;
             SerializedProperty onceParameterProperty;
@@ -122,8 +162,9 @@ namespace MYB.MMD4MecanimJitter
             void OnEnable()
             {
                 var self = target as MMD4M_MorphJitter;
-                
+
                 syncProperty = serializedObject.FindProperty("sync");
+                overrideOnceProperty = serializedObject.FindProperty("overrideOnce");
                 helperListProperty = serializedObject.FindProperty("helperList");
                 loopParameterProperty = serializedObject.FindProperty("loopParameter");
                 onceParameterProperty = serializedObject.FindProperty("onceParameter");
@@ -174,6 +215,7 @@ namespace MYB.MMD4MecanimJitter
                 EditorGUI.BeginDisabledGroup(EditorApplication.isPlaying);
                 syncProperty.boolValue = EditorGUILayout.Toggle(syncProperty.displayName, syncProperty.boolValue);
                 EditorGUI.EndDisabledGroup();
+                overrideOnceProperty.boolValue = EditorGUILayout.Toggle(overrideOnceProperty.displayName, overrideOnceProperty.boolValue);
 
                 //JitterParameter (Loop)
                 EditorGUI.BeginChangeCheck();

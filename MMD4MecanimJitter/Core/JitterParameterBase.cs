@@ -49,7 +49,7 @@ namespace MYB.MMD4MecanimJitter
             interval = new FloatRange(MIN_LIMIT_INTERVAL, MAX_LIMIT_INTERVAL, true, false);
             amplitude = new FloatRange();
             offset = new FloatRange();
-
+            
             isEnabled = true;
             periodToAmplitude = curve;
             this.loop = loop;

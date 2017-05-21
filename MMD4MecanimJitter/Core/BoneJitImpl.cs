@@ -12,6 +12,7 @@ namespace MYB.MMD4MecanimJitter
     {
         public MMD4MecanimBone bone;
         public bool syncAxis = false;
+        public bool overrideOnce;
         public float angleMagnification = 10f;
         public float maxDegreesDelta = 1f;
         public List<MMD4M_BoneJitter> children = new List<MMD4M_BoneJitter>();
@@ -31,6 +32,7 @@ namespace MYB.MMD4MecanimJitter
             new BoneJitterParameter(PrimitiveAnimationCurve.UpDown25, false)
         };
 
+        protected Vector2 magnification = Vector2.one;    //振幅倍率 x:Loop y:Once
         protected List<Coroutine> loopRoutineList = new List<Coroutine>();
         protected List<Coroutine> onceRoutineList = new List<Coroutine>();
 
@@ -43,7 +45,7 @@ namespace MYB.MMD4MecanimJitter
 
         public bool isChild;
 
-        //コルーチン動作中か否か
+        //コルーチンが動作中か否か
         public bool isProcessing
         {
             get {
@@ -51,6 +53,23 @@ namespace MYB.MMD4MecanimJitter
                 foreach (BoneJitterHelper h in helperList)
                 {
                     if (h.isProcessing)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+                return result;
+            }
+        }
+        
+        //Onceコルーチンが動作中か否か
+        public bool OnceIsProcessing
+        {
+            get {
+                bool result = false;
+                foreach (BoneJitterHelper h in helperList)
+                {
+                    if (h.OnceIsProcessing)
                     {
                         result = true;
                         break;
@@ -182,7 +201,7 @@ namespace MYB.MMD4MecanimJitter
                 Vector2 weight = helperList[syncAxis ? 0 : i].GetEulerAngle(loopCurve, onceCurve);
                 Vector2 enabledFlag = new Vector2(loopEnabled[i] ? 1 : 0, onceEnabled[i] ? 1 : 0);
 
-                vec[i] = Vector2.Dot(weight, enabledFlag);
+                vec[i] = Vector2.Dot(Vector2.Scale(weight, magnification), enabledFlag);
             }
 
             return vec;
@@ -237,9 +256,18 @@ namespace MYB.MMD4MecanimJitter
 
             state.timer = 0f;
 
+            //Period
             while (state.timer < state.curPeriod)
             {
                 state.timer += Time.deltaTime;
+                yield return null;
+            }
+
+            //Interval
+            float intervalTimer = 0f;
+            while (intervalTimer < state.curInterval)
+            {
+                intervalTimer += Time.deltaTime;
                 yield return null;
             }
 

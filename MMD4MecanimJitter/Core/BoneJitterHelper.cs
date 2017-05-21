@@ -73,6 +73,7 @@ namespace MYB.MMD4MecanimJitter
         public State onceState;
 
         public bool isProcessing { get { return loopState.isProcessing || onceState.isProcessing; } }
+        public bool OnceIsProcessing { get { return onceState.isProcessing; } }
 
         public BoneJitterHelper(BoneJitImpl manager, BoneJitterParameter loopParameter, BoneJitterParameter onceParameter)
         {
@@ -95,7 +96,7 @@ namespace MYB.MMD4MecanimJitter
 
         /// <summary>
         /// LoopとOnceのStateからそれぞれeulerAngleWeightを計算
-        /// weight.x : Loop / weight.y : Once
+        /// x : Loop / y : Once
         /// </summary>
         public Vector2 GetEulerAngle(AnimationCurve loopCurve, AnimationCurve onceCurve)
         {

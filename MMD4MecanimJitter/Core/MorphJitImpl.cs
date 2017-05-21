@@ -12,6 +12,7 @@ namespace MYB.MMD4MecanimJitter
     {
         public MMD4MecanimModel _model;
         public bool sync;
+        public bool overrideOnce;
         public List<MorphJitterHelper> helperList = new List<MorphJitterHelper>();
 
         public MorphJitterParameter loopParameter = new MorphJitterParameter(PrimitiveAnimationCurve.UpDown5, true);
@@ -24,7 +25,7 @@ namespace MYB.MMD4MecanimJitter
         public bool loopGroupEnabled = true;
         public bool onceGroupEnabled = true;
 
-        //コルーチン動作中か否か
+        //コルーチンが動作中か否か
         public bool isProcessing
         {
             get {
@@ -32,6 +33,23 @@ namespace MYB.MMD4MecanimJitter
                 foreach (MorphJitterHelper h in helperList)
                 {
                     if (h.isProcessing)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+                return result;
+            }
+        }
+
+        //Onceコルーチンが動作中か否か
+        public bool OnceIsProcessing
+        {
+            get {
+                bool result = false;
+                foreach (MorphJitterHelper h in helperList)
+                {
+                    if (h.OnceIsProcessing)
                     {
                         result = true;
                         break;
@@ -204,9 +222,18 @@ namespace MYB.MMD4MecanimJitter
 
             state.timer = 0f;
 
+            //Period
             while (state.timer < state.curPeriod)
             {
                 state.timer += Time.deltaTime;
+                yield return null;
+            }
+
+            //Interval
+            float intervalTimer = 0f;
+            while (intervalTimer < state.curInterval)
+            {
+                intervalTimer += Time.deltaTime;
                 yield return null;
             }
 

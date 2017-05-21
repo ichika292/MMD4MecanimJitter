@@ -8,6 +8,8 @@ namespace MYB.MMD4MecanimJitter
     [System.Serializable]
     public class MorphJitterParameter : JitterParameterBase
     {
+        public float magnification;
+
         /// <summary>
         /// 波形生成用のプロパティ(再生中に変動しない)
         /// Loop用とOnce用の2つインスタンス化される。
@@ -16,6 +18,7 @@ namespace MYB.MMD4MecanimJitter
         /// <param name="loop">ループ用か外部入力用か。</param>
         public MorphJitterParameter(AnimationCurve curve, bool loop) : base(curve, loop)
         {
+            magnification = 1f;
             period.min = 1f;
             if (loop)
             {
@@ -67,8 +70,7 @@ namespace MYB.MMD4MecanimJitter
                 {
                     //Period Interval
                     PutPropertyField(ref position, periodProperty);
-                    if (loop)
-                        PutPropertyField(ref position, intervalProperty);
+                    PutPropertyField(ref position, intervalProperty);
                     //Amplitude Offset
                     PutPropertyField(ref position, amplitudeProperty);
                     if (loop)
@@ -96,7 +98,7 @@ namespace MYB.MMD4MecanimJitter
             bool isEnabled = property.FindPropertyRelative("isEnabled").boolValue;
             bool loop = property.FindPropertyRelative("loop").boolValue;
 
-            int row = isEnabled ? (loop ? 6 : 3) : 0;
+            int row = isEnabled ? (loop ? 6 : 4) : 0;
             return row * (EditorGUIUtility.singleLineHeight + CLEARANCE_Y);
         }
     }

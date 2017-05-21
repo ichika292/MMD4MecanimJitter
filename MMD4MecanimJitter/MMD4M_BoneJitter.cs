@@ -29,22 +29,39 @@ namespace MYB.MMD4MecanimJitter
             Initialize();
         }
 
+#region ********** LOOP ***********    
         /// <summary>
         /// ループ再生開始
         /// </summary>
         public void PlayLoop()
         {
+            _PlayLoop(1f);
+        }
+
+        /// <summary>
+        /// ループ再生開始　振幅倍率設定あり
+        /// </summary>
+        public void PlayLoop(float magnification)
+        {
+            _PlayLoop(magnification);
+        }
+
+        public void _PlayLoop(float magnification)
+        {
             StopLoop();
-            
+
+            //振幅倍率 x:Loop
+            this.magnification.x = magnification;
+
             if (!loopGroupEnabled) return;
-            
+
             foreach (BoneJitterHelper h in helperList)
             {
                 var routine = StartCoroutine(LoopCoroutine(h.loopState));
                 loopRoutineList.Add(routine);
             }
         }
-        
+
         /// <summary>
         /// ループ再生停止
         /// </summary>
@@ -56,15 +73,37 @@ namespace MYB.MMD4MecanimJitter
             if (!isProcessing) ResetUserRotation();
         }
 
+#endregion
+
+#region ********** ONCE ***********
         /// <summary>
         /// 1周再生
         /// </summary>
         public void PlayOnce()
         {
+            _PlayOnce(1f);
+        }
+
+        /// <summary>
+        /// 1周再生　振幅倍率設定あり
+        /// </summary>
+        public void PlayOnce(float magnification)
+        {
+            _PlayOnce(magnification);
+        }
+        
+        public void _PlayOnce(float magnification)
+        {
             if (!onceGroupEnabled) return;
 
+            //動作中で上書き不可ならば return
+            if (OnceIsProcessing && !overrideOnce) return;
+
             StopOnce();
-            
+
+            //振幅倍率 y:Once
+            this.magnification.y = magnification;
+
             foreach (BoneJitterHelper h in helperList)
             {
                 //再生終了時にループ再生していない場合、初期化
@@ -83,7 +122,8 @@ namespace MYB.MMD4MecanimJitter
 
             if (!isProcessing) ResetUserRotation();
         }
-        
+#endregion
+
         /// <summary>
         /// 全再生停止 & 初期化
         /// </summary>
@@ -105,6 +145,7 @@ namespace MYB.MMD4MecanimJitter
         public class MMD4M_BoneJitterEditor : Editor
         {
             SerializedProperty syncAxisProperty;
+            SerializedProperty overrideOnceProperty;
             SerializedProperty angleMagnificationProperty;
             SerializedProperty maxDegreesDeltaProperty;
             SerializedProperty loopParameterProperty;
@@ -115,6 +156,7 @@ namespace MYB.MMD4MecanimJitter
                 var self = target as MMD4M_BoneJitter;
                 
                 syncAxisProperty = serializedObject.FindProperty("syncAxis");
+                overrideOnceProperty = serializedObject.FindProperty("overrideOnce");
                 angleMagnificationProperty = serializedObject.FindProperty("angleMagnification");
                 maxDegreesDeltaProperty = serializedObject.FindProperty("maxDegreesDelta");
                 loopParameterProperty = serializedObject.FindProperty("loopParameter");
@@ -164,6 +206,8 @@ namespace MYB.MMD4MecanimJitter
                         syncAxisProperty.boolValue = EditorGUILayout.Toggle(syncAxisProperty.displayName, syncAxisProperty.boolValue);
                     }
                     if (EditorGUI.EndChangeCheck()) self.OnValidate();
+                    overrideOnceProperty.boolValue = EditorGUILayout.Toggle(overrideOnceProperty.displayName, overrideOnceProperty.boolValue);
+
                 }
                 EditorGUI.EndDisabledGroup();
 

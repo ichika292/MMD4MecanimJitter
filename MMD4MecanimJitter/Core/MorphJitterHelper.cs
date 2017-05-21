@@ -59,7 +59,8 @@ namespace MYB.MMD4MecanimJitter
                 float timer01 = Mathf.Clamp01(timer / curPeriod);
                 float amp = CalcBlendState(curAmplitude, nextAmplitude, timer01, param.blendNextState);
                 float ofs = CalcBlendState(curOffset, nextOffset, timer01, param.blendNextState);
-                return Mathf.Clamp01(param.periodToAmplitude.Evaluate(timer01) * amp + ofs);
+                float weight = Mathf.Clamp01(param.periodToAmplitude.Evaluate(timer01) * amp + ofs);
+                return weight * param.magnification;
             }
 
             public void Reset()
@@ -82,6 +83,7 @@ namespace MYB.MMD4MecanimJitter
         public State onceState;
 
         public bool isProcessing { get { return loopState.isProcessing || onceState.isProcessing; } }
+        public bool OnceIsProcessing { get { return onceState.isProcessing; } }
 
         public MorphJitterHelper(MorphJitImpl manager, string morphName, float weightMagnification)
         {
