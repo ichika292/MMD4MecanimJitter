@@ -20,6 +20,7 @@ namespace MYB.MMD4MecanimJitter
 
         protected List<Coroutine> loopRoutineList = new List<Coroutine>();
         protected List<Coroutine> onceRoutineList = new List<Coroutine>();
+        protected Coroutine fadeInRoutine, fadeOutRoutine;
 
         //Editor用
         public bool loopGroupEnabled = true;
@@ -243,6 +244,35 @@ namespace MYB.MMD4MecanimJitter
 
             if (!isProcessing) callback();
         }
+
+        protected IEnumerator FadeInCoroutine(float sec)
+        {
+            sec = Mathf.Max(0.01f, sec);
+
+            while (loopParameter.magnification < 1f)
+            {
+                loopParameter.magnification += Time.deltaTime / sec;
+                yield return null;
+            }
+            loopParameter.magnification = 1f;
+            fadeInRoutine = null;
+        }
+
+        protected IEnumerator FadeOutCoroutine(float sec, System.Action callback)
+        {
+            sec = Mathf.Max(0.01f, sec);
+
+            while (loopParameter.magnification > 0f)
+            {
+                loopParameter.magnification -= Time.deltaTime / sec;
+                yield return null;
+            }
+            loopParameter.magnification = 0f;
+            fadeOutRoutine = null;
+            loopGroupEnabled = false;
+            callback();
+        }
+
 
 #if UNITY_EDITOR
         [CustomEditor(typeof(MorphJitImpl))]

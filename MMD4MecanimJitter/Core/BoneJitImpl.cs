@@ -35,6 +35,7 @@ namespace MYB.MMD4MecanimJitter
         protected Vector2 magnification = Vector2.one;    //振幅倍率 x:Loop y:Once
         protected List<Coroutine> loopRoutineList = new List<Coroutine>();
         protected List<Coroutine> onceRoutineList = new List<Coroutine>();
+        protected Coroutine fadeInRoutine, fadeOutRoutine;
 
         //Editor用
         public string[] axisLabel = { "--- X ---", "--- Y ---", "--- Z ---" };
@@ -128,7 +129,7 @@ namespace MYB.MMD4MecanimJitter
             }
         }
 
-        void Update()
+        void LateUpdate()
         {
             if (!isProcessing) return;
 
@@ -178,7 +179,10 @@ namespace MYB.MMD4MecanimJitter
                 vec += child.GetEulerAngle();
 
             var rot = Quaternion.Euler(vec * angleMagnification);
-            bone.userRotation = Quaternion.RotateTowards(bone.userRotation, rot, maxDegreesDelta);
+            bone.transform.localRotation *= rot;
+
+            //MMD4MecanimBoneを使う場合
+            //bone.userRotation = Quaternion.RotateTowards(bone.userRotation, rot, maxDegreesDelta);
         }
 
         protected void ResetUserRotation()
@@ -274,6 +278,34 @@ namespace MYB.MMD4MecanimJitter
             state.timer = 0f;
             yield return null;
             state.isProcessing = false;
+        }
+
+        protected IEnumerator FadeInCoroutine(float sec)
+        {
+            sec = Mathf.Max(0.01f, sec);
+
+            while(magnification.x < 1f)
+            {
+                magnification.x += Time.deltaTime / sec;
+                yield return null;
+            }
+            magnification.x = 1f;
+            fadeInRoutine = null;
+        }
+
+        protected IEnumerator FadeOutCoroutine(float sec, System.Action callback)
+        {
+            sec = Mathf.Max(0.01f, sec);
+
+            while (magnification.x > 0f)
+            {
+                magnification.x -= Time.deltaTime / sec;
+                yield return null;
+            }
+            magnification.x = 0f;
+            fadeOutRoutine = null;
+            loopGroupEnabled = false;
+            callback();
         }
 
 #if UNITY_EDITOR

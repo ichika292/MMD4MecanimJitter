@@ -45,6 +45,43 @@ namespace MYB.MMD4MecanimJitter
         {
             _PlayLoop(magnification);
         }
+        
+        /// <summary>
+        /// ループ再生停止
+        /// </summary>
+        public void StopLoop()
+        {
+            ResetRoutineList(loopRoutineList);
+            ResetAllLoopState();
+
+            if (!isProcessing) ResetUserRotation();
+        }
+
+        /// <summary>
+        /// ループ再生フェードイン
+        /// </summary>
+        /// <param name="second">フェード時間</param>
+        public void FadeIn(float second)
+        {
+            if (loopGroupEnabled) return;
+            if (fadeInRoutine != null || fadeOutRoutine != null) return;
+
+            loopGroupEnabled = true;
+            _PlayLoop(0f);
+            fadeInRoutine = StartCoroutine(FadeInCoroutine(second));
+        }
+
+        /// <summary>
+        /// ループ再生フェードアウト
+        /// </summary>
+        /// <param name="second">フェード時間</param>
+        public void FadeOut(float second)
+        {
+            if (!loopGroupEnabled) return;
+            if (fadeInRoutine != null || fadeOutRoutine != null) return;
+
+            fadeOutRoutine = StartCoroutine(FadeOutCoroutine(second, StopLoop));
+        }
 
         public void _PlayLoop(float magnification)
         {
@@ -60,17 +97,6 @@ namespace MYB.MMD4MecanimJitter
                 var routine = StartCoroutine(LoopCoroutine(h.loopState));
                 loopRoutineList.Add(routine);
             }
-        }
-
-        /// <summary>
-        /// ループ再生停止
-        /// </summary>
-        public void StopLoop()
-        {
-            ResetRoutineList(loopRoutineList);
-            ResetAllLoopState();
-
-            if (!isProcessing) ResetUserRotation();
         }
 
 #endregion

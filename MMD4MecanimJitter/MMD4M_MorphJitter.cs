@@ -43,6 +43,43 @@ namespace MYB.MMD4MecanimJitter
             _PlayLoop(Mathf.Max(0f, magnification));
         }
 
+        /// <summary>
+        /// ループ再生停止
+        /// </summary>
+        public void StopLoop()
+        {
+            ResetRoutineList(loopRoutineList);
+            ResetAllLoopState();
+
+            SetMorphWeight();
+        }
+
+        /// <summary>
+        /// ループ再生フェードイン
+        /// </summary>
+        /// <param name="second">フェード時間</param>
+        public void FadeIn(float second)
+        {
+            if (loopGroupEnabled) return;
+            if (fadeInRoutine != null || fadeOutRoutine != null) return;
+
+            loopGroupEnabled = true;
+            _PlayLoop(0f);
+            fadeInRoutine = StartCoroutine(FadeInCoroutine(second));
+        }
+
+        /// <summary>
+        /// ループ再生フェードアウト
+        /// </summary>
+        /// <param name="second">フェード時間</param>
+        public void FadeOut(float second)
+        {
+            if (!loopGroupEnabled) return;
+            if (fadeInRoutine != null || fadeOutRoutine != null) return;
+
+            fadeOutRoutine = StartCoroutine(FadeOutCoroutine(second, StopLoop));
+        }
+
         void _PlayLoop(float magnification)
         {
             if (helperList.Count == 0) return;
@@ -70,16 +107,6 @@ namespace MYB.MMD4MecanimJitter
             }
         }
 
-        /// <summary>
-        /// ループ再生停止
-        /// </summary>
-        public void StopLoop()
-        {
-            ResetRoutineList(loopRoutineList);
-            ResetAllLoopState();
-
-            SetMorphWeight();
-        }
 #endregion
 
 #region ********** ONCE ***********
@@ -129,6 +156,7 @@ namespace MYB.MMD4MecanimJitter
 
             SetMorphWeight();
         }
+
 #endregion
         
         /// <summary>
