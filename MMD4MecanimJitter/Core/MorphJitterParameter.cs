@@ -24,14 +24,16 @@ namespace MYB.MMD4MecanimJitter
             {
                 period.max = 3f;
                 offset.max = 0.3f;
-                blendNextState = BlendState.Curve;
+                blendNextPeriod = BlendState.Curve;
+                blendNextAmplitude = BlendState.Curve;
             }
             else
             {
                 period.max = 1f;
                 amplitude.min = 0.5f;
                 amplitude.max = 1.0f;
-                blendNextState = BlendState.None;
+                blendNextPeriod = BlendState.None;
+                blendNextAmplitude = BlendState.None;
             }
         }
     }
@@ -55,7 +57,8 @@ namespace MYB.MMD4MecanimJitter
                 var intervalProperty = property.FindPropertyRelative("interval");
                 var amplitudeProperty = property.FindPropertyRelative("amplitude");
                 var offsetProperty = property.FindPropertyRelative("offset");
-                var blendNextStateProperty = property.FindPropertyRelative("blendNextState");
+                var blendNextPeriodProperty = property.FindPropertyRelative("blendNextPeriod");
+                var blendNextAmplitudeProperty = property.FindPropertyRelative("blendNextAmplitude");
 
                 position.height = EditorGUIUtility.singleLineHeight;
 
@@ -78,9 +81,15 @@ namespace MYB.MMD4MecanimJitter
                     //Blend State
                     if (loop)
                     {
-                        var tmp = (System.Enum)(MorphJitterParameter.BlendState)blendNextStateProperty.enumValueIndex;
-                        blendNextStateProperty.enumValueIndex = (int)(MorphJitterParameter.BlendState)EditorGUI.EnumPopup(
-                            position, "Blend Next Amplitude", tmp);
+                        var tmp = (System.Enum)(MorphJitterParameter.BlendState)blendNextPeriodProperty.enumValueIndex;
+                        blendNextPeriodProperty.enumValueIndex = (int)(MorphJitterParameter.BlendState)EditorGUI.EnumPopup(
+                            position, blendNextPeriodProperty.displayName, tmp);
+
+                        position.y += position.height + CLEARANCE_Y;
+
+                        tmp = (System.Enum)(MorphJitterParameter.BlendState)blendNextAmplitudeProperty.enumValueIndex;
+                        blendNextAmplitudeProperty.enumValueIndex = (int)(MorphJitterParameter.BlendState)EditorGUI.EnumPopup(
+                            position, blendNextAmplitudeProperty.displayName, tmp);
                     }
                 }
             }
@@ -98,7 +107,7 @@ namespace MYB.MMD4MecanimJitter
             bool isEnabled = property.FindPropertyRelative("isEnabled").boolValue;
             bool loop = property.FindPropertyRelative("loop").boolValue;
 
-            int row = isEnabled ? (loop ? 6 : 4) : 0;
+            int row = isEnabled ? (loop ? 7 : 4) : 0;
             return row * (EditorGUIUtility.singleLineHeight + CLEARANCE_Y);
         }
     }

@@ -27,7 +27,8 @@ namespace MYB.MMD4MecanimJitter
         public FloatRange offset;       //morphWeight下限
 
         public AnimationCurve periodToAmplitude;    //weight = curve(timer/period) * amplitude + offset
-        public BlendState blendNextState;
+        public BlendState blendNextPeriod;
+        public BlendState blendNextAmplitude;
 
         //Editor用
         public bool isEnabled;

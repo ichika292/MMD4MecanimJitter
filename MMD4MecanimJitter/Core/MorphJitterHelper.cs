@@ -21,6 +21,7 @@ namespace MYB.MMD4MecanimJitter
             public bool isProcessing;
             public float timer;         //周期毎にリセットするカウンタ
             public float curPeriod;     //周期(秒)
+            public float nextPeriod;
             public float curInterval;   //次周期までの待ち時間(秒)
             public float curAmplitude;  //morphWeight振幅
             public float nextAmplitude;
@@ -38,7 +39,9 @@ namespace MYB.MMD4MecanimJitter
 
             public void SetNextParameter()
             {
-                curPeriod = param.period.Random();
+                curPeriod = nextPeriod;
+                nextPeriod = param.period.Random();
+
                 curInterval = param.interval.Random();
 
                 curAmplitude = nextAmplitude;
@@ -56,11 +59,17 @@ namespace MYB.MMD4MecanimJitter
             {
                 if (curPeriod <= 0f) return curOffset;
 
-                float timer01 = Mathf.Clamp01(timer / curPeriod);
-                float amp = CalcBlendState(curAmplitude, nextAmplitude, timer01, param.blendNextState);
-                float ofs = CalcBlendState(curOffset, nextOffset, timer01, param.blendNextState);
+                float timer01 = Mathf.Clamp01(timer);
+                float amp = CalcBlendState(curAmplitude, nextAmplitude, timer01, param.blendNextAmplitude);
+                float ofs = CalcBlendState(curOffset, nextOffset, timer01, param.blendNextAmplitude);
                 float weight = Mathf.Clamp01(param.periodToAmplitude.Evaluate(timer01) * amp + ofs);
                 return weight * param.magnification;
+            }
+
+            public float GetCurrentPeriod()
+            {
+                float timer01 = Mathf.Clamp01(timer);
+                return CalcBlendState(curPeriod, nextPeriod, timer01, param.blendNextPeriod);
             }
 
             public void Reset()

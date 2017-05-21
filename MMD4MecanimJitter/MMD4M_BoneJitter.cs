@@ -206,10 +206,9 @@ namespace MYB.MMD4MecanimJitter
                         syncAxisProperty.boolValue = EditorGUILayout.Toggle(syncAxisProperty.displayName, syncAxisProperty.boolValue);
                     }
                     if (EditorGUI.EndChangeCheck()) self.OnValidate();
-                    overrideOnceProperty.boolValue = EditorGUILayout.Toggle(overrideOnceProperty.displayName, overrideOnceProperty.boolValue);
-
                 }
                 EditorGUI.EndDisabledGroup();
+                overrideOnceProperty.boolValue = EditorGUILayout.Toggle(overrideOnceProperty.displayName, overrideOnceProperty.boolValue);
 
                 if (!self.isChild)
                 {
