@@ -26,7 +26,7 @@ namespace MYB.MMD4MecanimJitter
             Initialize();
         }
 
-#region ********** LOOP ***********    
+        #region ********** LOOP ***********    
         /// <summary>
         /// ループ再生開始
         /// </summary>
@@ -60,11 +60,18 @@ namespace MYB.MMD4MecanimJitter
         /// <param name="second">フェード時間</param>
         public void FadeIn(float second)
         {
-            if (loopGroupEnabled) return;
-            if (fadeInRoutine != null || fadeOutRoutine != null) return;
+            if (fadeInRoutine != null) return;
+            if (fadeOutRoutine != null)
+            {
+                StopCoroutine(fadeOutRoutine);
+                fadeOutRoutine = null;
+            }
+            if (!loopGroupEnabled)
+            {
+                loopGroupEnabled = true;
+                _PlayLoop(0f);
+            }
 
-            loopGroupEnabled = true;
-            _PlayLoop(0f);
             fadeInRoutine = StartCoroutine(FadeInCoroutine(second));
         }
 
@@ -74,8 +81,13 @@ namespace MYB.MMD4MecanimJitter
         /// <param name="second">フェード時間</param>
         public void FadeOut(float second)
         {
-            if (!loopGroupEnabled) return;
-            if (fadeInRoutine != null || fadeOutRoutine != null) return;
+            if (fadeOutRoutine != null) return;
+
+            if (fadeInRoutine != null)
+            {
+                StopCoroutine(fadeInRoutine);
+                fadeInRoutine = null;
+            }
 
             fadeOutRoutine = StartCoroutine(FadeOutCoroutine(second, StopLoop));
         }
@@ -107,9 +119,9 @@ namespace MYB.MMD4MecanimJitter
             }
         }
 
-#endregion
+        #endregion
 
-#region ********** ONCE ***********
+        #region ********** ONCE ***********
         /// <summary>
         /// 1周再生
         /// </summary>
@@ -157,7 +169,7 @@ namespace MYB.MMD4MecanimJitter
             SetMorphWeight();
         }
 
-#endregion
+        #endregion
         
         /// <summary>
         /// 全再生停止 & 初期化
@@ -173,8 +185,8 @@ namespace MYB.MMD4MecanimJitter
             SetMorphWeight();
         }
 
+        #region Inspector拡張
 #if UNITY_EDITOR
-        //Inspector拡張クラス
         [CanEditMultipleObjects]
         [CustomEditor(typeof(MMD4M_MorphJitter))]
         public class MMD4M_MorphJitterEditor : Editor
@@ -294,5 +306,6 @@ namespace MYB.MMD4MecanimJitter
             }
         }
 #endif
+        #endregion
     }
 }
