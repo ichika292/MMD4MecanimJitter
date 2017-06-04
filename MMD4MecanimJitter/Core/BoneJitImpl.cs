@@ -32,6 +32,7 @@ namespace MYB.MMD4MecanimJitter
             new BoneJitterParameter(PrimitiveAnimationCurve.UpDown25, false)
         };
 
+        protected Animator anim;
         protected Vector2 magnification = Vector2.one;    //振幅倍率 x:Loop y:Once
         protected List<Coroutine> loopRoutineList = new List<Coroutine>();
         protected List<Coroutine> onceRoutineList = new List<Coroutine>();
@@ -82,38 +83,40 @@ namespace MYB.MMD4MecanimJitter
 
         void Reset()
         {
-            //1階層上までMecanimBoneを検索
-            bone = GetComponent<MMD4MecanimBone>();
-            if (bone == null)
+            try
             {
-                bone = transform.parent.GetComponent<MMD4MecanimBone>();
+                //1階層上までMecanimBoneを検索
+                bone = GetComponent<MMD4MecanimBone>();
+
+                if (bone == null)
+                    bone = transform.parent.GetComponent<MMD4MecanimBone>();
+
+                //MecanimBone階層下から、同Boneを操作対象としたBoneJitter(親)が存在するか確認
+                int parentBoneJitter = bone.GetComponentsInChildren<MMD4M_BoneJitter>()
+                                            .Where(x => x.bone == this.bone)
+                                            .Where(x => x.isChild == false)
+                                            .Count(x => x.GetInstanceID() != this.GetInstanceID());
+
+                //親が既に在る場合、ループ再生を無効
+                if (parentBoneJitter > 0)
+                {
+                    isChild = true;
+                    loopGroupEnabled = false;
+                    for (int i = 0; i < 3; i++)
+                        loopEnabled[i] = false;
+                }
             }
-            if (bone == null)
+            catch (System.Exception)
             {
                 Debug.Log("MMD4MecanimBone not found.");
-                return;
-            }
-
-            //MecanimBone階層下から、同Boneを操作対象としたBoneJitter(親)が存在するか確認
-            int parentBoneJitter = bone.GetComponentsInChildren<MMD4M_BoneJitter>()
-                                        .Where(x => x.bone == this.bone)
-                                        .Where(x => x.isChild == false)
-                                        .Where(x => x.GetInstanceID() != this.GetInstanceID())
-                                        .Count();
-
-            //親が既に在る場合、ループ再生を無効
-            if (parentBoneJitter > 0)
-            {
-                isChild = true;
-                loopGroupEnabled = false;
-                for (int i = 0; i < 3; i++)
-                    loopEnabled[i] = false;
             }
         }
 
         void Awake()
         {
             if (bone == null) return;
+
+            anim = bone.model.GetComponent<Animator>();
 
             if (!isChild)
             {
@@ -131,6 +134,7 @@ namespace MYB.MMD4MecanimJitter
 
         void LateUpdate()
         {
+            if (anim == null) return;
             if (!isProcessing) return;
 
             SetUserRotation();
@@ -179,10 +183,11 @@ namespace MYB.MMD4MecanimJitter
                 vec += child.GetEulerAngle();
 
             var rot = Quaternion.Euler(vec * angleMagnification);
-            bone.transform.localRotation *= rot;
-
-            //MMD4MecanimBoneを使う場合
-            //bone.userRotation = Quaternion.RotateTowards(bone.userRotation, rot, maxDegreesDelta);
+            
+            if (anim.runtimeAnimatorController == null)
+                bone.transform.localRotation = rot;
+            else
+                bone.transform.localRotation *= rot;
         }
 
         protected void ResetUserRotation()
