@@ -219,7 +219,7 @@ namespace MYB.MMD4MecanimJitter
 
             state.isProcessing = true;
             
-            state.SetNextParameter();
+            state.SetOnceParameter();
 
             state.timer = 0f;
 

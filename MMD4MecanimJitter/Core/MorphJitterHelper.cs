@@ -51,6 +51,14 @@ namespace MYB.MMD4MecanimJitter
                 nextOffset = param.offset.Random();
             }
 
+            public void SetOnceParameter()
+            {
+                curPeriod = param.period.Random();
+                curInterval = param.interval.Random();
+                curAmplitude = param.amplitude.Random();
+                curOffset = param.offset.Random();
+            }
+
             /// <summary>
             /// 現在のWeightを計算
             /// </summary>
