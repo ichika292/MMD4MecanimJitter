@@ -184,7 +184,7 @@ namespace MYB.MMD4MecanimJitter
                 case MorphJitterParameter.BlendState.Linear:
                     return Mathf.Lerp(current, next, t);
                 case MorphJitterParameter.BlendState.Curve:
-                    return (current - next) * (Mathf.Cos(Mathf.PI * t) + 1f) / 2f + next;
+                    return (next - current) * (-2 * t + 3) * t * t + current;
                 default:
                     return current;
             }
