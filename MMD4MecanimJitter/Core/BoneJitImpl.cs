@@ -246,7 +246,7 @@ namespace MYB.MMD4MecanimJitter
                 //Period
                 while (state.timer < 1f)
                 {
-                    state.timer += Time.deltaTime /state.GetCurrentPeriod();
+                    state.timer += Time.deltaTime / state.GetCurrentPeriod();
                     yield return null;
                 }
             }
@@ -266,9 +266,9 @@ namespace MYB.MMD4MecanimJitter
             state.timer = 0f;
 
             //Period
-            while (state.timer < state.curPeriod)
+            while (state.timer < 1f)
             {
-                state.timer += Time.deltaTime;
+                state.timer += Time.deltaTime / state.GetCurrentPeriod();
                 yield return null;
             }
 
