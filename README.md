@@ -1,3 +1,6 @@
+最新版は[こちら](https://github.com/ichika292/TransformJitter)
+
+
 # MMD4MecanimJitter
 UnityのMMD4Mecanim用アドオンです。  
 morphWeightやBoneをプロシージャル生成した波形で振幅させます。ループ再生しつつ、任意のタイミングで別の波形を加算することが出来ます。
